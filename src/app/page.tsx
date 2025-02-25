@@ -1,53 +1,66 @@
-import Link from "next/link";
+"use client";
 
-import { LatestPost } from "@/app/_components/post";
-import { api, HydrateClient } from "@/trpc/server";
+import { useState, useEffect } from "react";
+import { api } from "@/trpc/react";
 
-export default async function Home() {
-  const hello = await api.post.hello({ text: "from tRPC" });
+export default function Home() {
+  const [latitude, setLatitude] = useState<number | null>(null);
+  const [longitude, setLongitude] = useState<number | null>(null);
+  const [distance, setDistance] = useState(1000);
+  const [googleMapsUrl, setGoogleMapsUrl] = useState("");
 
-  void api.post.getLatest.prefetch();
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLatitude(position.coords.latitude);
+          setLongitude(position.coords.longitude);
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+        },
+      );
+    }
+  }, []);
+
+  const { data, refetch } = api.router.getWalkingRoute.useQuery(
+    { latitude: latitude ?? 0, longitude: longitude ?? 0, distance },
+    {
+      enabled: latitude !== null && longitude !== null,
+    },
+  );
+  useEffect(() => {
+    if (data?.googleMapsUrl) {
+      setGoogleMapsUrl(data.googleMapsUrl);
+    }
+  }, [data]);
 
   return (
-    <HydrateClient>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
-          <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
-            Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
-          </h1>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-              href="https://create.t3.gg/en/usage/first-steps"
-              target="_blank"
-            >
-              <h3 className="text-2xl font-bold">First Steps →</h3>
-              <div className="text-lg">
-                Just the basics - Everything you need to know to set up your
-                database and authentication.
-              </div>
-            </Link>
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-              href="https://create.t3.gg/en/introduction"
-              target="_blank"
-            >
-              <h3 className="text-2xl font-bold">Documentation →</h3>
-              <div className="text-lg">
-                Learn more about Create T3 App, the libraries it uses, and how
-                to deploy it.
-              </div>
-            </Link>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <p className="text-2xl text-white">
-              {hello ? hello.greeting : "Loading tRPC query..."}
-            </p>
-          </div>
-
-          <LatestPost />
-        </div>
-      </main>
-    </HydrateClient>
+    <div className="flex flex-col items-center gap-4 p-4">
+      <input
+        type="number"
+        placeholder="Distance (m)"
+        value={distance}
+        onChange={(e) => setDistance(parseInt(e.target.value, 10))}
+        className="border p-2"
+      />
+      <button
+        onClick={() => refetch()}
+        disabled={latitude === null || longitude === null}
+        className="rounded bg-blue-500 p-2 text-white"
+      >
+        Get Walking Route
+      </button>
+      {googleMapsUrl && (
+        <a
+          href={googleMapsUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-500 underline"
+        >
+          Open in Google Maps
+        </a>
+      )}
+    </div>
   );
 }
