@@ -19,11 +19,12 @@ export const routeRouter = createTRPCRouter({
         latitude: z.number(),
         longitude: z.number(),
         distance: z.number().positive(),
+        maxPoints: z.number().int().positive().default(10),
       }),
     )
     .query(async ({ input }) => {
       try {
-        const { latitude, longitude, distance } = input;
+        const { latitude, longitude, distance, maxPoints } = input;
         const seed = Math.floor(Math.random() * 1000);
 
         const params = new URLSearchParams({
@@ -52,13 +53,23 @@ export const routeRouter = createTRPCRouter({
           throw new Error("ルートが見つかりません");
 
         let points: [number, number][] = data.paths[0].points.coordinates;
-        if (points.length > 10) {
-          const reducedPoints: [number, number][] = [
-            points[0]!,
-            ...points.filter((_, i) => i % Math.ceil(points.length / 9) === 0),
-            points[points.length - 1]!,
-          ];
-          points = reducedPoints;
+
+        if (points.length > maxPoints) {
+          const firstPoint = points[0]!; // 最初のポイント
+          const lastPoint = points[points.length - 1]!; // 最後のポイント
+          const middlePoints = points.slice(1, points.length - 1); // 間のポイント
+
+          // 間のポイントを maxPoints - 2 に間引く
+          const step = Math.ceil(middlePoints.length / (maxPoints - 2));
+          const reducedMiddlePoints = middlePoints.filter(
+            (_, i) => i % step === 0,
+          );
+
+          // 必ず最初と最後のポイントを含める
+          points = [firstPoint, ...reducedMiddlePoints, lastPoint].slice(
+            0,
+            maxPoints,
+          );
         }
 
         const googleMapsUrl = `https://www.google.co.jp/maps/dir/${points
