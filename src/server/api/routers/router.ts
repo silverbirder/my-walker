@@ -76,7 +76,11 @@ export const routeRouter = createTRPCRouter({
           .map((p) => `${p[1]},${p[0]}`)
           .join("/")}/`;
 
-        return { points, googleMapsUrl };
+        return {
+          points,
+          originalPoints: data.paths[0].points.coordinates,
+          googleMapsUrl,
+        };
       } catch (error) {
         throw new Error(
           `ルート取得に失敗しました: ${error instanceof Error ? error.message : "不明なエラー"}`,
