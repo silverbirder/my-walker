@@ -8,6 +8,7 @@ import {
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
+import { CSSProperties } from "react";
 
 L.Icon.Default.mergeOptions({
   iconUrl: "/leaflet/marker-icon.png",
@@ -27,20 +28,34 @@ export const Map = ({ center, points, isSearching }: Props) => {
     [center[0] - 0.05, center[1] + 0.05],
   ];
 
+  const overlayStyle: CSSProperties = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    color: "white",
+    fontWeight: "bold",
+    fontSize: "18px",
+    zIndex: 1100,
+  };
+
   return (
-    <MapContainer center={center} zoom={16} className="h-full w-full">
+    <MapContainer center={center} zoom={16} className="relative h-full w-full">
       <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
       <Marker position={center} />
       {!isSearching && points && (
         <Polyline positions={points.map(([a, b]) => [b, a])} />
       )}
       {isSearching && (
-        <Pane name="searching-overlay" style={{ zIndex: 1000 }}>
-          <Rectangle
-            bounds={bounds as L.LatLngBoundsLiteral}
-            pathOptions={{ color: "rgba(0, 0, 0, 0.5)", fillOpacity: 0.5 }}
-          />
-        </Pane>
+        <>
+          <Pane name="searching-overlay" style={{ zIndex: 1000 }}>
+            <Rectangle
+              bounds={bounds as L.LatLngBoundsLiteral}
+              pathOptions={{ color: "rgba(0, 0, 0, 0.5)", fillOpacity: 0.5 }}
+            />
+          </Pane>
+          <div style={overlayStyle}>検索中...</div>
+        </>
       )}
     </MapContainer>
   );
