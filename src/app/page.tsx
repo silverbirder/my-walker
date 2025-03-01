@@ -51,7 +51,7 @@ export default function Home() {
   const [isGettingLocation, setIsGettingLocation] = useState(false);
   const [urlUpdated, setUrlUpdated] = useState(false);
 
-  const debouncedDistance = useDebounce(distance, 1000);
+  const debouncedDistance = useDebounce(distance, 500);
 
   const getLocation = () => {
     if (navigator.geolocation) {
