@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { api } from "@/trpc/react";
 import {
   Card,
@@ -70,7 +70,7 @@ export default function Home() {
     }
   };
 
-  const { data, refetch, isLoading, isRefetching } =
+  const { data, refetch, isLoading, isRefetching, isFetching } =
     api.router.getWalkingRoute.useQuery(
       {
         latitude: latitude ?? 0,
@@ -81,6 +81,10 @@ export default function Home() {
         enabled: latitude !== null && longitude !== null,
       },
     );
+  const isSearching = useMemo(
+    () => isLoading || isRefetching || isFetching,
+    [isLoading, isRefetching, isFetching],
+  );
 
   useEffect(() => {
     if (data?.googleMapsUrl) {
@@ -133,7 +137,7 @@ export default function Home() {
               >
                 距離（メートル）
               </label>
-              {(isLoading || isRefetching) && (
+              {isSearching && (
                 <div className="flex items-center text-blue-600">
                   <Loader2 className="mr-1 h-3 w-3 animate-spin" />
                   <span className="text-xs">検索中...</span>
@@ -164,7 +168,7 @@ export default function Home() {
             {latitude !== null && longitude !== null && (
               <Button
                 onClick={() => refetch()}
-                disabled={isRefetching}
+                disabled={isSearching}
                 variant="outline"
                 size="sm"
                 className="ml-auto flex border-blue-200 text-blue-600 hover:bg-blue-50"
@@ -179,6 +183,7 @@ export default function Home() {
                   <Map
                     points={data?.originalPoints}
                     center={[latitude, longitude]}
+                    isSearching={isSearching}
                   />
                 ) : (
                   <div className="flex h-full w-full flex-col items-center justify-center bg-slate-100 p-6 text-center">
@@ -202,22 +207,26 @@ export default function Home() {
                 asChild
                 variant="default"
                 className={`w-full py-5 text-white transition-all duration-500 ${
-                  urlUpdated
-                    ? "bg-green-500 hover:bg-green-600"
-                    : "bg-blue-600 hover:bg-blue-700"
+                  isSearching
+                    ? "cursor-not-allowed bg-gray-400"
+                    : urlUpdated
+                      ? "bg-green-500 hover:bg-green-600"
+                      : "bg-blue-600 hover:bg-blue-700"
                 }`}
+                disabled={isSearching}
               >
                 <a
                   href={googleMapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
+                  className={isSearching ? "pointer-events-none" : ""}
                 >
-                  <ExternalLink
-                    className={`mr-2 h-4 w-4 ${urlUpdated ? "animate-pulse" : ""}`}
-                  />
-                  {urlUpdated
-                    ? "新しいルートが設定されました！"
-                    : "Google Mapで散歩を始める"}
+                  <ExternalLink className="mr-2 h-4 w-4" />
+                  {isSearching
+                    ? "ルートを検索中..."
+                    : urlUpdated
+                      ? "新しいルートが設定されました！"
+                      : "Google Mapで散歩を始める"}
                 </a>
               </Button>
               <p className="mt-2 text-center text-xs text-gray-500">

@@ -12,6 +12,7 @@ L.Icon.Default.mergeOptions({
 type Props = {
   center: [number, number];
   points?: [number, number][];
+  isSearching?: boolean;
 };
 
 export const Map = ({ center, points }: Props) => {
