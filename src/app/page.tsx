@@ -49,6 +49,7 @@ export default function Home() {
   const [distance, setDistance] = useState(500);
   const [googleMapsUrl, setGoogleMapsUrl] = useState("");
   const [isGettingLocation, setIsGettingLocation] = useState(false);
+  const [urlUpdated, setUrlUpdated] = useState(false);
 
   const debouncedDistance = useDebounce(distance, 1000);
 
@@ -84,6 +85,9 @@ export default function Home() {
   useEffect(() => {
     if (data?.googleMapsUrl) {
       setGoogleMapsUrl(data.googleMapsUrl);
+      setUrlUpdated(true);
+      const timer = setTimeout(() => setUrlUpdated(false), 1000);
+      return () => clearTimeout(timer);
     }
   }, [data]);
 
@@ -197,15 +201,23 @@ export default function Home() {
               <Button
                 asChild
                 variant="default"
-                className="w-full bg-blue-600 py-5 text-white hover:bg-blue-700"
+                className={`w-full py-5 text-white transition-all duration-500 ${
+                  urlUpdated
+                    ? "bg-green-500 hover:bg-green-600"
+                    : "bg-blue-600 hover:bg-blue-700"
+                }`}
               >
                 <a
                   href={googleMapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <ExternalLink className="mr-2 h-4 w-4" />
-                  Google Mapで散歩を始める
+                  <ExternalLink
+                    className={`mr-2 h-4 w-4 ${urlUpdated ? "animate-pulse" : ""}`}
+                  />
+                  {urlUpdated
+                    ? "新しいルートが設定されました！"
+                    : "Google Mapで散歩を始める"}
                 </a>
               </Button>
               <p className="mt-2 text-center text-xs text-gray-500">
