@@ -99,7 +99,8 @@ export default function Home() {
         <CardHeader className="bg-blue-500 text-white">
           <CardTitle className="text-xl font-medium">散歩コース生成</CardTitle>
           <CardDescription className="text-blue-50">
-            現在地から指定した距離の散歩コースを生成します
+            現在地から出発し、同じ場所に戻ってくる散歩コースをGoogle
+            Mapで案内します
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6 p-6">
@@ -179,10 +180,10 @@ export default function Home() {
                   <div className="flex h-full w-full flex-col items-center justify-center bg-slate-100 p-6 text-center">
                     <MapIcon className="mb-4 h-12 w-12 text-blue-300" />
                     <h3 className="mb-2 text-lg font-medium text-blue-700">
-                      位置情報が必要です
+                      散歩コースを生成するには
                     </h3>
                     <p className="text-sm text-blue-600">
-                      散歩コースを生成するには、上の「現在地を取得」ボタンをクリックしてください
+                      「現在地を取得」ボタンをクリックしてください
                     </p>
                   </div>
                 )}
@@ -192,19 +193,30 @@ export default function Home() {
         </CardContent>
         <CardFooter className="border-t border-gray-100 bg-gray-50 p-4">
           {googleMapsUrl ? (
-            <Button
-              asChild
-              variant="outline"
-              className="w-full border-blue-300 py-5 text-blue-600 hover:bg-blue-50"
-            >
-              <a href={googleMapsUrl} target="_blank" rel="noopener noreferrer">
-                <ExternalLink className="mr-2 h-4 w-4" />
-                Google Mapsで開く
-              </a>
-            </Button>
+            <div className="w-full space-y-2">
+              <Button
+                asChild
+                variant="default"
+                className="w-full bg-blue-600 py-5 text-white hover:bg-blue-700"
+              >
+                <a
+                  href={googleMapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <ExternalLink className="mr-2 h-4 w-4" />
+                  Google Mapで散歩を始める
+                </a>
+              </Button>
+              <p className="mt-2 text-center text-xs text-gray-500">
+                ※Google
+                Mapの仕様上、目的地は最大10件までのため、表示されるルートが実際のプレビューと異なる場合があります
+              </p>
+            </div>
           ) : (
             <div className="w-full py-3 text-center text-sm text-gray-500">
-              位置情報を取得すると、Google Mapsで開くリンクが表示されます
+              現在地を取得すると、散歩コースのプレビューとGoogle
+              Mapリンクが表示されます
             </div>
           )}
         </CardFooter>
