@@ -13,7 +13,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { Navigation, Loader2, ExternalLink } from "lucide-react";
+import {
+  Navigation,
+  Loader2,
+  ExternalLink,
+  MapPin,
+  MapIcon,
+} from "lucide-react";
 import dynamic from "next/dynamic";
 
 function useDebounce<T>(value: T, delay: number): T {
@@ -42,22 +48,26 @@ export default function Home() {
   const [longitude, setLongitude] = useState<number | null>(null);
   const [distance, setDistance] = useState(500);
   const [googleMapsUrl, setGoogleMapsUrl] = useState("");
+  const [isGettingLocation, setIsGettingLocation] = useState(false);
 
   const debouncedDistance = useDebounce(distance, 1000);
 
-  useEffect(() => {
+  const getLocation = () => {
     if (navigator.geolocation) {
+      setIsGettingLocation(true);
       navigator.geolocation.getCurrentPosition(
         (position) => {
           setLatitude(position.coords.latitude);
           setLongitude(position.coords.longitude);
+          setIsGettingLocation(false);
         },
         (error) => {
           console.error("位置情報の取得に失敗しました:", error);
+          setIsGettingLocation(false);
         },
       );
     }
-  }, []);
+  };
 
   const { data, refetch, isLoading, isRefetching } =
     api.router.getWalkingRoute.useQuery(
@@ -93,6 +103,23 @@ export default function Home() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6 p-6">
+          <Button
+            onClick={getLocation}
+            disabled={isGettingLocation}
+            variant="outline"
+            className="w-full border-blue-300 py-2 text-blue-600 hover:bg-blue-50"
+          >
+            {isGettingLocation ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />{" "}
+                位置情報取得中...
+              </>
+            ) : (
+              <>
+                <MapPin className="mr-2 h-4 w-4" /> 現在地を取得
+              </>
+            )}
+          </Button>
           <div className="space-y-3 rounded-lg bg-blue-50 p-4">
             <div className="flex items-center justify-between">
               <label
@@ -128,8 +155,8 @@ export default function Home() {
               />
             </div>
           </div>
-          {latitude !== null && longitude !== null && (
-            <div className="space-y-4">
+          <div className="space-y-4">
+            {latitude !== null && longitude !== null && (
               <Button
                 onClick={() => refetch()}
                 disabled={isRefetching}
@@ -140,20 +167,31 @@ export default function Home() {
                 <Navigation className="mr-1 h-4 w-4" />
                 同じ距離で再検索
               </Button>
-
-              <div className="overflow-hidden rounded-lg border border-gray-200 shadow-md">
-                <div className="h-80 w-full">
+            )}
+            <div className="overflow-hidden rounded-lg border border-gray-200 shadow-md">
+              <div className="h-80 w-full">
+                {latitude !== null && longitude !== null ? (
                   <Map
                     points={data?.originalPoints}
                     center={[latitude, longitude]}
                   />
-                </div>
+                ) : (
+                  <div className="flex h-full w-full flex-col items-center justify-center bg-slate-100 p-6 text-center">
+                    <MapIcon className="mb-4 h-12 w-12 text-blue-300" />
+                    <h3 className="mb-2 text-lg font-medium text-blue-700">
+                      位置情報が必要です
+                    </h3>
+                    <p className="text-sm text-blue-600">
+                      散歩コースを生成するには、上の「現在地を取得」ボタンをクリックしてください
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
-          )}
+          </div>
         </CardContent>
         <CardFooter className="border-t border-gray-100 bg-gray-50 p-4">
-          {googleMapsUrl && (
+          {googleMapsUrl ? (
             <Button
               asChild
               variant="outline"
@@ -164,6 +202,10 @@ export default function Home() {
                 Google Mapsで開く
               </a>
             </Button>
+          ) : (
+            <div className="w-full py-3 text-center text-sm text-gray-500">
+              位置情報を取得すると、Google Mapsで開くリンクが表示されます
+            </div>
           )}
         </CardFooter>
       </Card>
