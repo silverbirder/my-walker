@@ -6,7 +6,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "散歩コース生成",
     short_name: "散歩コース",
     description:
-      " 現在地から出発し、同じ場所に戻ってくる散歩コースをGoogle Mapで案内します",
+      "現在地から出発し、同じ場所に戻ってくる散歩コースをGoogle Mapで案内します",
     start_url: "/",
     display: "standalone",
     background_color: "#fff",

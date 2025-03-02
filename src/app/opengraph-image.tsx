@@ -3,7 +3,7 @@ import { ImageResponse } from "next/og";
 export const runtime = "edge";
 
 export const alt = "散歩コース生成";
-const description = "現在地から出発し、同じ場所に戻ってくる散歩コースを案内";
+const description = "現在地から出発し、同じ場所に戻ってくる散歩コースをGoogle Mapで案内します";
 
 export const size = {
   width: 1200,
@@ -53,7 +53,7 @@ export default async function Image() {
             color: primaryColor,
             fontSize: 36,
             textAlign: "center",
-            maxWidth: "85%",
+            maxWidth: "80%",
           }}
         >
           {description}
