@@ -2,15 +2,15 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { api } from "@/trpc/react";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Slider } from "@/components/ui/slider";
 import {
   Navigation,
   Loader2,
   ExternalLink,
   MapPin,
   MapIcon,
+  Plus,
+  Minus,
 } from "lucide-react";
 import {
   Card,
@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/card";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { Progress } from "@/components/ui/progress";
 
 function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState(value);
@@ -69,6 +70,13 @@ export default function Home() {
         },
       );
     }
+  };
+
+  const incrementDistance = (amount: number) => {
+    setDistance((prev) => {
+      const newValue = Math.round((prev + amount) / 100) * 100;
+      return Math.min(Math.max(newValue, 100), 3000);
+    });
   };
 
   const { data, refetch, isLoading, isRefetching, isFetching } =
@@ -133,10 +141,7 @@ export default function Home() {
             </Button>
             <div className="space-y-3 rounded-lg bg-blue-50 p-4">
               <div className="flex items-center justify-between">
-                <label
-                  htmlFor="distance"
-                  className="text-sm font-medium text-blue-800"
-                >
+                <label className="text-sm font-medium text-blue-800">
                   距離（メートル）
                 </label>
                 {isSearching && (
@@ -146,24 +151,39 @@ export default function Home() {
                   </div>
                 )}
               </div>
-              <div className="flex items-center space-x-4">
-                <Slider
-                  id="distance"
-                  min={100}
-                  max={5000}
-                  step={100}
-                  value={[distance]}
-                  onValueChange={(value) => setDistance(value[0] ?? 0)}
-                  className="flex-grow"
-                />
-                <Input
-                  type="number"
-                  value={distance}
-                  onChange={(e) =>
-                    setDistance(Number.parseInt(e.target.value, 10))
-                  }
-                  className="w-20 border-blue-200"
-                />
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-sm text-blue-600">
+                  <span>100m</span>
+                  <span>3000m</span>
+                </div>
+                <Progress value={(distance - 100) / 29} className="h-2" />
+                <div className="flex items-center justify-center">
+                  <span className="text-lg font-semibold text-blue-700">
+                    {distance}m
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center justify-between space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => incrementDistance(-100)}
+                  className="flex-1 border-blue-300 text-blue-600 hover:bg-blue-100"
+                  disabled={distance <= 100}
+                >
+                  <Minus className="h-4 w-4" />
+                  <span className="ml-1">100</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => incrementDistance(100)}
+                  className="flex-1 border-blue-300 text-blue-600 hover:bg-blue-100"
+                  disabled={distance >= 3000}
+                >
+                  <Plus className="h-4 w-4" />
+                  <span className="ml-1">100</span>
+                </Button>
               </div>
             </div>
             <div className="space-y-4">
