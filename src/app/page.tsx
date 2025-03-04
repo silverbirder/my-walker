@@ -11,7 +11,16 @@ import {
   MapIcon,
   Plus,
   Minus,
+  Info,
 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   Card,
   CardContent,
@@ -23,6 +32,7 @@ import {
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { Progress } from "@/components/ui/progress";
+import { DialogOverlay } from "@/components/ui/dialog";
 
 function useDebounce<T>(value: T, delay: number): T {
   const [debouncedValue, setDebouncedValue] = useState(value);
@@ -225,32 +235,90 @@ export default function Home() {
           <CardFooter className="flex flex-col space-y-4 bg-gray-50">
             {googleMapsUrl ? (
               <div className="w-full space-y-2">
-                <Button
-                  asChild
-                  variant="default"
-                  className={`w-full py-5 text-white transition-all duration-500 ${
-                    isSearching
-                      ? "cursor-not-allowed bg-gray-400"
-                      : urlUpdated
-                        ? "bg-green-500 hover:bg-green-600"
-                        : "bg-blue-600 hover:bg-blue-700"
-                  }`}
-                  disabled={isSearching}
-                >
-                  <a
-                    href={googleMapsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={isSearching ? "pointer-events-none" : ""}
+                <div className="flex w-full items-center">
+                  <Button
+                    asChild
+                    variant="default"
+                    className={`flex-1 py-5 text-white transition-all duration-500 ${
+                      isSearching
+                        ? "cursor-not-allowed bg-gray-400"
+                        : urlUpdated
+                          ? "bg-green-500 hover:bg-green-600"
+                          : "bg-blue-600 hover:bg-blue-700"
+                    }`}
+                    disabled={isSearching}
                   >
-                    <ExternalLink className="mr-2 h-4 w-4" />
-                    {isSearching
-                      ? "ルートを検索中..."
-                      : urlUpdated
-                        ? "新しいルートが設定されました！"
-                        : "Google Mapで散歩を始める"}
-                  </a>
-                </Button>
+                    <a
+                      href={googleMapsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={isSearching ? "pointer-events-none" : ""}
+                    >
+                      <ExternalLink className="mr-2 h-4 w-4" />
+                      {isSearching
+                        ? "ルートを検索中..."
+                        : urlUpdated
+                          ? "新しいルートが設定されました！"
+                          : "Google Mapで散歩を始める"}
+                    </a>
+                  </Button>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="ml-2 text-blue-600 hover:bg-blue-50"
+                      >
+                        <Info className="h-5 w-5" />
+                        <span className="sr-only">ナビゲーションのヒント</span>
+                      </Button>
+                    </DialogTrigger>
+                    <DialogOverlay className="z-[1000]" />
+                    <DialogContent className="z-[1001] sm:max-w-md">
+                      <DialogHeader>
+                        <DialogTitle>Google Mapの便利な使い方</DialogTitle>
+                        <DialogDescription>
+                          散歩をより快適にするためのヒントです
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4 py-4">
+                        <div className="flex items-start space-x-3">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-full text-blue-600">
+                            <MapPin className="h-4 w-4" />
+                          </div>
+                          <div>
+                            <h4 className="font-medium">経由地に到着したら</h4>
+                            <p className="text-sm text-muted-foreground">
+                              「次の経由地へ」をタップしましょう。タップしないと次のナビが始まりません。
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-start space-x-3">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-full text-blue-600">
+                            <Minus className="h-4 w-4" />
+                          </div>
+                          <div>
+                            <h4 className="font-medium">経由地の削除</h4>
+                            <p className="text-sm text-muted-foreground">
+                              画面下部のナビメニューを上にスワイプし、「次の経由地を削除」を選択すると、経由地をスキップできます。
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-start space-x-3">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-full text-blue-600">
+                            <Navigation className="h-4 w-4" />
+                          </div>
+                          <div>
+                            <h4 className="font-medium">音声ガイダンス設定</h4>
+                            <p className="text-sm text-muted-foreground">
+                              画面下部のナビメニューを上にスワイプし、設定から「詳しい音声案内」をオンにすると、徒歩ナビ中により詳しい音声案内を利用できます。
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </div>
                 <p className="mt-2 text-center text-xs text-gray-500">
                   ※Google
                   Mapの仕様上、目的地は最大10件までのため、表示されるルートが実際のプレビューと異なる場合があります

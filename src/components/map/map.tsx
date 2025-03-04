@@ -8,7 +8,7 @@ import {
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import { type CSSProperties } from "react";
+import type { CSSProperties } from "react";
 
 L.Icon.Default.mergeOptions({
   iconUrl: "/leaflet/marker-icon.png",
@@ -36,27 +36,34 @@ export const Map = ({ center, points, isSearching }: Props) => {
     color: "white",
     fontWeight: "bold",
     fontSize: "18px",
-    zIndex: 1100,
+    zIndex: 400,
   };
 
   return (
-    <MapContainer center={center} zoom={16} className="relative h-full w-full">
-      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-      <Marker position={center} />
-      {!isSearching && points && (
-        <Polyline positions={points.map(([a, b]) => [b, a])} />
-      )}
-      {isSearching && (
-        <>
-          <Pane name="searching-overlay" style={{ zIndex: 1000 }}>
-            <Rectangle
-              bounds={bounds as L.LatLngBoundsLiteral}
-              pathOptions={{ color: "rgba(0, 0, 0, 0.5)", fillOpacity: 0.5 }}
-            />
-          </Pane>
-          <div style={overlayStyle}>検索中...</div>
-        </>
-      )}
-    </MapContainer>
+    <div className="relative h-full w-full" style={{ zIndex: 0 }}>
+      <MapContainer
+        center={center}
+        zoom={16}
+        className="h-full w-full"
+        style={{ zIndex: 0 }}
+      >
+        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+        <Marker position={center} />
+        {!isSearching && points && (
+          <Polyline positions={points.map(([a, b]) => [b, a])} />
+        )}
+        {isSearching && (
+          <>
+            <Pane name="searching-overlay" style={{ zIndex: 300 }}>
+              <Rectangle
+                bounds={bounds as L.LatLngBoundsLiteral}
+                pathOptions={{ color: "rgba(0, 0, 0, 0.5)", fillOpacity: 0.5 }}
+              />
+            </Pane>
+            <div style={overlayStyle}>検索中...</div>
+          </>
+        )}
+      </MapContainer>
+    </div>
   );
 };
