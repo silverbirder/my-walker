@@ -12,6 +12,7 @@ import {
   Plus,
   Minus,
   Info,
+  Headphones,
 } from "lucide-react";
 import {
   Dialog,
@@ -284,6 +285,30 @@ export default function Home() {
                       <div className="space-y-4 py-4">
                         <div className="flex items-start space-x-3">
                           <div className="flex h-8 w-8 items-center justify-center rounded-full text-blue-600">
+                            <Headphones className="h-4 w-4" />
+                          </div>
+                          <div>
+                            <h4 className="font-medium">
+                              Google Mapナビの音声案内を活用しよう
+                            </h4>
+                            <p className="text-sm text-muted-foreground">
+                              イヤホンで音声案内を聞けば、画面を見なくても散歩を楽しめます。
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-start space-x-3">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-full text-blue-600">
+                            <Navigation className="h-4 w-4" />
+                          </div>
+                          <div>
+                            <h4 className="font-medium">音声ガイダンス設定</h4>
+                            <p className="text-sm text-muted-foreground">
+                              画面下部のナビメニューを上にスワイプし、設定から「詳しい音声案内」をオンにすると、徒歩ナビ中により詳しい音声案内を利用できます。
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-start space-x-3">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-full text-blue-600">
                             <MapPin className="h-4 w-4" />
                           </div>
                           <div>
@@ -301,17 +326,6 @@ export default function Home() {
                             <h4 className="font-medium">経由地の削除</h4>
                             <p className="text-sm text-muted-foreground">
                               画面下部のナビメニューを上にスワイプし、「次の経由地を削除」を選択すると、経由地をスキップできます。
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-start space-x-3">
-                          <div className="flex h-8 w-8 items-center justify-center rounded-full text-blue-600">
-                            <Navigation className="h-4 w-4" />
-                          </div>
-                          <div>
-                            <h4 className="font-medium">音声ガイダンス設定</h4>
-                            <p className="text-sm text-muted-foreground">
-                              画面下部のナビメニューを上にスワイプし、設定から「詳しい音声案内」をオンにすると、徒歩ナビ中により詳しい音声案内を利用できます。
                             </p>
                           </div>
                         </div>
