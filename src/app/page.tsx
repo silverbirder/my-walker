@@ -64,6 +64,24 @@ export default function Home() {
   const [isGettingLocation, setIsGettingLocation] = useState(false);
   const [urlUpdated, setUrlUpdated] = useState(false);
 
+  useEffect(() => {
+    const storedDistance = localStorage.getItem("distance");
+    if (storedDistance) {
+      const parsedDistance = Number(storedDistance);
+      if (
+        !isNaN(parsedDistance) &&
+        parsedDistance >= 100 &&
+        parsedDistance <= 3000
+      ) {
+        setDistance(parsedDistance);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("distance", String(distance));
+  }, [distance]);
+
   const debouncedDistance = useDebounce(distance, 500);
 
   const getLocation = () => {
