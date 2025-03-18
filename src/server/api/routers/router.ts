@@ -31,7 +31,10 @@ export const routeRouter = createTRPCRouter({
           point: `${latitude},${longitude}`,
           vehicle: "foot",
           algorithm: "round_trip",
-          "ch.disable": "true",
+          // "Free packages cannot use flexible mode" エラー回避
+          // FlexibleModeを使わない。
+          // https://github.com/graphhopper/graphhopper/blob/master/docs/core/routing.md
+          // "ch.disable": "true",
           "round_trip.distance": distance.toString(),
           "round_trip.seed": seed.toString(),
           locale: "ja",
