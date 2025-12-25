@@ -383,6 +383,13 @@ export default function Home() {
               >
                 関連サービス
               </Link>
+              <Link
+                target="_blank"
+                href="https://fequest.vercel.app/4"
+                className="text-sm text-gray-600 hover:text-blue-500 hover:underline"
+              >
+                機能リクエスト
+              </Link>
             </div>
             <p className="text-xs text-gray-500">
               &copy; {new Date().getFullYear()} silverbirder. All rights
